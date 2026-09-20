@@ -1,0 +1,12 @@
+'use strict';
+EP.Palette=class{
+  constructor(onAdd){this.onAdd=onAdd;this.items=[['Math.sin(x)','Sine'],['Math.cos(x)','Cosine'],['x ** 2','Parabola'],['x','Linear'],['Math.exp(x)','Exponential'],['1','Constant']].map(([source,name])=>({source,name}));this.render();this.movable();}
+  render(){const list=document.getElementById('function-list');list.replaceChildren();this.items.forEach((item,index)=>{const b=document.createElement('button');b.className='function-card';b.draggable=true;b.title=item.name+' — drag or click to add';b.setAttribute('aria-label','Add '+item.name);const canvas=document.createElement('canvas'),code=document.createElement('code');code.textContent=item.source||item.name;b.append(canvas,code);b.addEventListener('click',()=>this.onAdd(this.node(index)));b.addEventListener('dragstart',e=>{e.dataTransfer.setData('application/x-equation-painter',String(index));e.dataTransfer.setData('text/plain',String(index));e.dataTransfer.effectAllowed='copy';});list.append(b);requestAnimationFrame(()=>EP.Plot.thumbnail(canvas,x=>item.tree?EP.Model.evaluate(item.tree,x):EP.Math.compile(item.source).eval(x),EP.Model.colors[index%6]));});}
+  node(index){const item=this.items[index];return item?(item.tree?EP.Model.clone(item.tree):EP.Model.leaf(item.source,item.name)):null;}
+  add(item){this.items.push(item);this.render();}
+  movable(){const palette=document.getElementById('palette'),handle=document.getElementById('palette-handle'),area=document.getElementById('workspace');let drag;
+    handle.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;drag={x:e.clientX,y:e.clientY,left:palette.offsetLeft,top:palette.offsetTop};handle.setPointerCapture(e.pointerId);});
+    handle.addEventListener('pointermove',e=>{if(!drag)return;palette.style.left=Math.max(0,Math.min(area.clientWidth-palette.offsetWidth,drag.left+e.clientX-drag.x))+'px';palette.style.top=Math.max(0,Math.min(area.clientHeight-palette.offsetHeight,drag.top+e.clientY-drag.y))+'px';});handle.addEventListener('pointerup',()=>drag=null);handle.addEventListener('pointercancel',()=>drag=null);
+    new ResizeObserver(()=>{palette.style.left=Math.max(0,Math.min(palette.offsetLeft,area.clientWidth-palette.offsetWidth))+'px';palette.style.top=Math.max(0,Math.min(palette.offsetTop,area.clientHeight-palette.offsetHeight))+'px';}).observe(area);
+  }
+};
