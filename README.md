@@ -38,6 +38,22 @@ With ω = 2π/T:
 
 Square and triangle use odd harmonics. These are finite approximations; ringing near square/sawtooth jumps is expected. Values are real: undefined points (including negative bases with fractional powers) produce gaps. Plotting is sampled, so extreme zoom, frequencies, or very narrow features can alias.
 
+## Examples
+
+These images are included in [`Images/`](Images/) as visual examples of the project and its plotting workflow.
+
+### Equation Painter workspace
+
+![Equation Painter workspace](Images/download.jpg)
+
+### Function composition and plotting
+
+![Function composition example](Images/download-1.jpg)
+
+### Fourier and parametric drawing reference
+
+![Fourier and parametric drawing reference](Images/exec-4d960e8f-30e3-421b-96da-70d00b350afe.png)
+
 ## Files
 
 - `index.html` — single application entry point
