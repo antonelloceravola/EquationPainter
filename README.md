@@ -42,6 +42,10 @@ Square and triangle use odd harmonics. These are finite approximations; ringing 
 
 These images are included in [`Images/`](Images/) as visual examples of the project and its plotting workflow.
 
+### Start Screen
+
+![UI example](Images/UIExample.png)
+
 ### Equation Painter workspace
 
 ![Equation Painter workspace](Images/download.jpg)
