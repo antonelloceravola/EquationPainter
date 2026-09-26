@@ -26,7 +26,7 @@ Inside means `f(g(x))`; Outside means `g(f(x))`. Blend is `(1-t)*f(x) + t*g(x)`;
 
 Drag the palette by its header to move it. Drag the canvas to pan; scroll to zoom. Fit view restores a useful centered view. Undo/Redo covers all expression mutations. Reset is undoable. Save to palette makes the selected function or group reusable. Click + to add a custom expression with a live thumbnail preview.
 
-## Usage use-cases
+## Use-cases
 
 Equation Painter could become a general “function design studio”: you start from simple primitives, compose them, inspect the shape, and tune parameters until the result has the behavior you need.
 
@@ -45,7 +45,7 @@ Beyond Fourier reconstruction, it could help design:
 - Window functions for FFT work: Hann, Blackman, Kaiser, Tukey, and custom windows.
 - Approximation of a target sound by a finite Fourier series.
 
-A useful feature here would be a “harmonic view” showing the function and its spectrum side by side.
+TODO: A useful feature here would be a “harmonic view” showing the function and its spectrum side by side.
 
 ### Neural-network transfer functions
 
@@ -58,7 +58,7 @@ It could be used to design and compare activation functions:
 - Functions with asymmetric positive and negative behavior.
 - Custom functions optimized for gradient flow.
 
-The inspector could show not only `f(x)`, but also `f′(x)` and perhaps `f″(x)`. That would make saturation, dead zones, curvature, and exploding gradients immediately visible.
+TODO: The inspector could show not only `f(x)`, but also `f′(x)` and perhaps `f″(x)`. That would make saturation, dead zones, curvature, and exploding gradients immediately visible.
 
 ### Control systems
 
@@ -73,7 +73,7 @@ You could design:
 - Actuator mappings.
 - Trajectory profiles with bounded velocity and acceleration.
 
-For this domain, constraints matter. A function might need to be monotonic, bounded, continuous, or have zero slope at both ends. Equation Painter could detect and report whether those conditions are satisfied.
+TODO: For this domain, constraints matter. A function might need to be monotonic, bounded, continuous, or have zero slope at both ends. Equation Painter could detect and report whether those conditions are satisfied.
 
 ### Robotics and motion
 
@@ -88,7 +88,7 @@ Parametric mode makes it useful for:
 - Periodic gait design.
 - Smoothing hand-drawn paths.
 
-A particularly useful extension would be plotting position, velocity, and acceleration simultaneously for `x(t)` and `y(t)`.
+TODO: A particularly useful extension would be plotting position, velocity, and acceleration simultaneously for `x(t)` and `y(t)`.
 
 ### Geometry and shape generation
 
@@ -104,7 +104,7 @@ With parametric functions, it could create:
 - Procedural logos.
 - Symmetric or tiled motifs.
 
-A polar mode would make this even more natural:
+TODO: A polar mode would make this even more natural! Like:
 
 ```text
 r = f(θ)
@@ -126,7 +126,7 @@ Given sampled points, Equation Painter could help construct an interpretable app
 - Robust approximations with clamping or saturation.
 - Calibration curves for instruments and sensors.
 
-The user could paste a table of points, see the residual error, and adjust a composed model manually.
+TODO: We could allo the user to paste a table of points, see the residual error, and adjust a composed model manually.
 
 ### Image and graphics processing
 
