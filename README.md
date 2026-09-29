@@ -14,7 +14,7 @@ Choose **F** or **G** in the top expression area. Palette clicks, canvas drops, 
 
 Mode changes preserve both trees. **Reset F** clears F; **Reset G** restores G to identity. Removing the last G part also restores identity. Undo/Redo includes both trees, selections, mode, and parameter interval. View JavaScript exports both functions and either the composed result or the parametric point function, including interval limits.
 
-The palette stays reusable across modes: its `x` variable becomes the input parameter `t` when used in parametric drawing. Custom expressions accept either `x` or `t` as names for the same input.
+The palette stays reusable across modes: its `x` variable becomes the input parameter `t` when used in parametric drawing. Built-in cards include powers through quartic, exponential and logarithmic curves, a Gaussian, sigmoid, tanh, Lorentzian, and damped sine. Custom expressions accept either `x` or `t` as names for the same input.
 
 ## Paint a function
 
