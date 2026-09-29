@@ -102,5 +102,60 @@
   $('show-code').onclick=()=>{$('code').value=state.code();$('code-dialog').showModal();};
   $('copy-code').onclick=async()=>{try{await navigator.clipboard.writeText($('code').value);notify('JavaScript copied');$('copy-code').textContent='Copied';setTimeout(()=>$('copy-code').textContent='Copy JavaScript',1500);}catch{$('code').focus();$('code').select();notify('Press ⌘C or Ctrl+C to copy the selected code');}};
   document.addEventListener('keydown',e=>{if(e.target.matches('input,textarea,select'))return;if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='z'){e.preventDefault();e.shiftKey?redo():undo();}});
+
+  // Small programmatic interface to the same live document and UI update path.
+  // `paint` adds an expression, `select` chooses an editor/node, `set` changes
+  // settings or the selected node, `do` runs discrete actions, and `get` reads state.
+  EP.api={
+    paint(expression,{to=state.active,op=state.operator,at=null,name}={}){
+      let node;
+      if(typeof expression==='string'){
+        EP.Math.compile(expression);
+        node=M.leaf(expression,name);
+      }else if(expression&&typeof expression==='object'&&'wave'in expression){
+        node=M.fourier(expression.wave,expression.terms??7,expression.amplitude??1,expression.period??2*Math.PI);
+      }else if(expression&&typeof expression==='object'&&expression.type){node=M.clone(expression);}
+      else throw new TypeError('paint expects a math expression, expression node, or Fourier options');
+      const previous=state.operator;
+      if(!['add','subtract','multiply','divide','inside','outside','power','blend','upper','lower','replace'].includes(op))throw new RangeError('Unknown operation: '+op);
+      state.operator=op;
+      try{add(node,at,to);}finally{state.operator=previous;}
+      return this.get();
+    },
+    select(target,to=state.active){
+      if(!['f','g'].includes(to))throw new RangeError('Editor must be f or g');
+      const id=typeof target==='string'?target:target?.id;
+      if(id&&!M.find(state.functions[to],id))throw new RangeError('No expression part '+id+' in '+to.toUpperCase());
+      state.active=to;state.selected=id||state.functions[to]?.id||null;render();return this.get();
+    },
+    set(options={}){
+      let changed=false,fit=false;
+      if(options.to!==undefined){if(!['f','g'].includes(options.to))throw new RangeError('Editor must be f or g');state.active=options.to;changed=true;}
+      if(options.operator!==undefined){if(!['add','subtract','multiply','divide','inside','outside','power','blend','upper','lower','replace'].includes(options.operator))throw new RangeError('Unknown operation: '+options.operator);state.operator=options.operator;changed=true;}
+      if(options.mode!==undefined){state.setMode(options.mode);changed=true;fit=true;}
+      if(options.range!==undefined){if(!state.setRange(Number(options.range.start),Number(options.range.end)))throw new RangeError('Range must have finite limits with end greater than start');changed=true;fit=true;}
+      if(options.selected!==undefined){const id=typeof options.selected==='string'?options.selected:options.selected?.id;if(id&&!M.find(state.root,id))throw new RangeError('Selected part is not in the active editor');state.selected=id||null;changed=true;}
+      if(options.edit!==undefined){const n=selected();if(!n)throw new Error('Select an expression part before editing it');const e=options.edit;const keys=['a','b','k','p','t'];if(Object.keys(e).some(k=>!keys.includes(k)&&k!=='unary'))throw new RangeError('Editable values: a, b, k, p, t, unary');for(const k of keys)if(e[k]!==undefined&&!Number.isFinite(Number(e[k])))throw new TypeError(k+' must be finite');if(e.unary!==undefined&&!['none','abs','neg','reciprocal'].includes(e.unary))throw new RangeError('Unknown transform: '+e.unary);checkpoint();for(const k of keys)if(e[k]!==undefined)n[k]=Number(e[k]);if(e.unary!==undefined)n.unary=e.unary;changed=true;}
+      if(options.components!==undefined){plot.components=!!options.components;$('components').checked=plot.components;changed=true;}
+      if(options.view!==undefined){const v=options.view;for(const k of ['x','y','sx','sy'])if(v[k]!==undefined){if(!Number.isFinite(Number(v[k]))||(k==='sx'||k==='sy')&&Number(v[k])<=0)throw new TypeError('View values must be finite and scales positive');plot.view[k]=Number(v[k]);}changed=true;}
+      if(options.palette!==undefined){const p=options.palette;if(!Number.isFinite(p.x)||!Number.isFinite(p.y))throw new TypeError('Palette x and y must be finite');const el=$('palette');el.style.left=Math.max(0,Math.min($('workspace').clientWidth-el.offsetWidth,p.x))+'px';el.style.top=Math.max(0,Math.min($('workspace').clientHeight-el.offsetHeight,p.y))+'px';}
+      if(changed)render();if(fit)plot.fit();return this.get();
+    },
+    do(action,value){
+      switch(action){
+        case 'undo':undo();break;case 'redo':redo();break;case 'reset':$('reset').click();break;case 'remove':$('remove').click();break;case 'circle':$('circle-preset').click();break;case 'fit':plot.fit();break;
+        case 'zoom':plot.zoom(Number(value));break;
+        case 'save':$('save-function').click();break;
+        case 'show-code':$('show-code').click();break;
+        case 'close-dialog':document.querySelectorAll('dialog[open]').forEach(d=>d.close());break;
+        case 'copy-code':$('code').value=state.code();$('copy-code').click();break;
+        case 'palette':{const item=typeof value==='string'?{source:value,name:value}:{...value};if(!item?.source&&!item?.tree)throw new TypeError('palette expects a math expression or palette item');if(item.source)EP.Math.compile(item.source);palette.add(item);break;}
+        case 'fourier':return this.paint({wave:value?.wave||state.wave,terms:value?.terms??7,amplitude:value?.amplitude??1,period:value?.period??2*Math.PI},value||{});
+        default:throw new RangeError('Unknown action: '+action);
+      }
+      return this.get();
+    },
+    get(){return {active:state.active,mode:state.mode,operator:state.operator,range:{...state.range},functions:structuredClone(state.functions),selected:state.selected,view:{...plot.view},components:plot.components,palette:palette.items.map(x=>({name:x.name,source:x.source})),code:state.code()};}
+  };
   render();
 })();
