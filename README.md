@@ -12,7 +12,7 @@ Choose **F** or **G** in the top expression area. Palette clicks, canvas drops, 
 - **Parametric drawing:** the plot traces `(g(t), f(t))` over the editable t interval. F is the Y coordinate; G is the X coordinate. Selecting either editor leaves the combined drawing visible, and the sidebar previews that coordinate versus t. X and Y use the same pixel scale to preserve geometry. A dot marks the start of the trace.
 - **Circle preset:** replaces both functions with `g(t) = cos(t)` and `f(t) = sin(t)`, selects parametric mode, and sets t to 0…2π. Undo restores both previous functions and the previous mode. Set G's amplitude to 2 to turn the circle into an ellipse.
 
-Mode changes preserve both trees. Reset applies only to the active editor: F becomes empty; G returns to identity. Removing the last G part also restores identity. Undo/Redo includes both trees, selections, mode, and parameter interval. View JavaScript exports both functions and either the composed result or the parametric point function, including interval limits.
+Mode changes preserve both trees. **Reset F** clears F; **Reset G** restores G to identity. Removing the last G part also restores identity. Undo/Redo includes both trees, selections, mode, and parameter interval. View JavaScript exports both functions and either the composed result or the parametric point function, including interval limits.
 
 The palette stays reusable across modes: its `x` variable becomes the input parameter `t` when used in parametric drawing. Custom expressions accept either `x` or `t` as names for the same input.
 
@@ -80,13 +80,16 @@ EP.api.paint('x ** 2', { to: 'g', op: 'replace' });
 EP.api.select('n3', 'f');
 EP.api.set({ edit: { a: 2, p: 0.5 }, mode: 'parametric', range: { start: 0, end: 6.283 } });
 EP.api.do('undo');
+const fSource = EP.api.code('f');
+const bothSources = EP.api.code();
 const state = EP.api.get();
 ```
 
 - `paint(expression, options)` adds a math expression, model node, or Fourier spec (`{wave, terms, amplitude, period}`). Options are `to` (`f`/`g`), `op`, `at` (target node id), and `name`.
 - `select(target, to)` selects a node id (or node) in an editor.
 - `set(options)` changes `to`, `operator`, `mode`, `range`, `selected`, selected-node `edit` values (`a`, `b`, `k`, `p`, `t`, `unary`), component visibility, plot `view` (`x`, `y`, `sx`, `sy`), or palette position (`x`, `y`).
-- `do(action, value)` handles `undo`, `redo`, `reset`, `remove`, `circle`, `fit`, `zoom`, `save`, `fourier`, `palette`, `show-code`, `copy-code`, and `close-dialog`.
+- `do(action, value)` handles `undo`, `redo`, `reset` (active editor), `reset-f`, `reset-g`, `remove`, `circle`, `fit`, `zoom`, `save`, `fourier`, `palette`, `show-code`, `copy-code`, and `close-dialog`.
+- `code(channel)` returns a JavaScript arrow-function string for `f` or `g`, or `null` when F is empty. With no channel it returns `{ f, g }`. The variable is `x` in modulation mode and `t` in parametric mode. For example, `EP.api.code('g')` returns `(x) => x` when G is the identity in modulation mode.
 - `get()` returns a copy of the current functions and view settings, the palette names and sources, and the generated JavaScript in `code`.
 
 Calls that edit expressions use the app's undo history and redraw the visible UI. Node ids can be read from `get().functions`; they remain valid until that node is replaced or removed. The API controls the current page and is available to browser scripts, bookmarklets, or the developer console; it is not a separate server endpoint.

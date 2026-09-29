@@ -2,7 +2,7 @@
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Equation Painter</title><link rel="stylesheet" href="styles.css"></head>
 <body>
-<header><div class="brand"><span class="brand-mark">∿</span><h1>Equation Painter</h1></div><div class="history"><button id="undo" title="Undo (⌘/Ctrl Z)">↶ <span>Undo</span></button><button id="redo" title="Redo (⌘/Ctrl Shift Z)">↷ <span>Redo</span></button><button id="reset">Reset F</button></div></header>
+<header><div class="brand"><span class="brand-mark">∿</span><h1>Equation Painter</h1></div><div class="history"><button id="undo" title="Undo (⌘/Ctrl Z)">↶ <span>Undo</span></button><button id="redo" title="Redo (⌘/Ctrl Shift Z)">↷ <span>Redo</span></button><button id="reset-f" title="Clear F only; G is preserved">Reset F</button><button id="reset-g" title="Restore G to the identity function">Reset G</button></div></header>
 <nav id="operators" aria-label="Operation for the next function"></nav>
 <section class="function-workbench" aria-label="Function editors">
 <div class="mode-bar"><div class="mode-switch" aria-label="Plot mode"><button id="mode-modulation" aria-pressed="true">Input modulation</button><button id="mode-parametric" aria-pressed="false">Parametric drawing</button></div><span id="plot-formula">y = f(g(x))</span><button id="circle-preset" title="Replace both functions with a circle. Undo restores your work.">○ Circle preset</button><button id="show-code" class="quiet">View JavaScript</button></div>

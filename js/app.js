@@ -44,8 +44,7 @@
   }
   function render(){
     const parametric=state.mode==='parametric',active=state.active.toUpperCase();
-    $('undo').disabled=!state.past.length;$('redo').disabled=!state.future.length;$('reset').disabled=!state.root;
-    $('reset').textContent='Reset '+active;$('reset').title=state.active==='g'?'Restore g to the identity function':'Clear F only; G is preserved';
+    $('undo').disabled=!state.past.length;$('redo').disabled=!state.future.length;$('reset-f').disabled=!state.functions.f;
     $('show-code').disabled=false;
     $('empty').hidden=parametric?!!state.functions.f:state.active==='g'||!!state.functions.f;
     $('empty-title').textContent=parametric?'Give your drawing a Y coordinate.':'A blank canvas. Infinite possibilities.';
@@ -73,7 +72,8 @@
     plot.document=state;plot.root=state.root;plot.selected=n;plot.components=$('components').checked;plot.draw();renderPreview();if($('code-dialog').open)$('code').value=state.code();
   }
   $('undo').onclick=undo;$('redo').onclick=redo;
-  $('reset').onclick=()=>{state.reset();render();notify(state.active==='g'?'G restored to identity · F preserved':'F cleared · G preserved');};
+  function resetChannel(channel){state.reset(channel);render();notify(channel==='g'?'G restored to identity · F preserved':'F cleared · G preserved');}
+  $('reset-f').onclick=()=>resetChannel('f');$('reset-g').onclick=()=>resetChannel('g');
   $('remove').onclick=()=>{state.remove();render();notify('Part removed'+(state.active==='g'?' · Empty G returns to identity':''));};
   for(const channel of ['f','g']){
     $('select-'+channel).onclick=()=>{state.active=channel;render();notify('Editing '+channel.toUpperCase());};
@@ -147,7 +147,7 @@
     },
     do(action,value){
       switch(action){
-        case 'undo':undo();break;case 'redo':redo();break;case 'reset':$('reset').click();break;case 'remove':$('remove').click();break;case 'circle':$('circle-preset').click();break;case 'fit':plot.fit();break;
+        case 'undo':undo();break;case 'redo':redo();break;case 'reset':resetChannel(state.active);break;case 'reset-f':resetChannel('f');break;case 'reset-g':resetChannel('g');break;case 'remove':$('remove').click();break;case 'circle':$('circle-preset').click();break;case 'fit':plot.fit();break;
         case 'zoom':plot.zoom(Number(value));break;
         case 'save':$('save-function').click();break;
         case 'show-code':$('show-code').click();break;
@@ -170,6 +170,13 @@
         default:throw new RangeError('Unknown action: '+action);
       }
       return this.get();
+    },
+    code(channel){
+      const variable=state.mode==='parametric'?'t':'x';
+      const fn=key=>state.functions[key]?`(${variable}) => ${M.code(state.functions[key],variable)}`:null;
+      if(channel===undefined)return {f:fn('f'),g:fn('g')};
+      if(!['f','g'].includes(channel))throw new RangeError('Editor must be f or g');
+      return fn(channel);
     },
     get(){return {active:state.active,mode:state.mode,operator:state.operator,range:{...state.range},functions:structuredClone(state.functions),selected:state.selected,view:{...plot.view},components:plot.components,palette:palette.items.map(x=>({name:x.name,source:x.source})),code:state.code()};}
   };

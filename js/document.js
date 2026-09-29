@@ -58,10 +58,11 @@ EP.Document = class {
     if (!this.root && this.active === 'g') this.root = EP.Model.leaf('x', 'Identity');
     this.selected = this.root?.id || null;
   }
-  reset() {
+  reset(channel = this.active) {
+    if (!['f','g'].includes(channel)) throw new RangeError('Editor must be f or g');
     this.checkpoint();
-    this.root = this.active === 'g' ? EP.Model.leaf('x', 'Identity') : null;
-    this.selected = this.root?.id || null;
+    this.functions[channel] = channel === 'g' ? EP.Model.leaf('x', 'Identity') : null;
+    this.selections[channel] = this.functions[channel]?.id || null;
   }
   setMode(mode) {
     if (!['modulation', 'parametric'].includes(mode) || mode === this.mode) return;
