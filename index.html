@@ -28,5 +28,18 @@
 <footer><div><span class="dot"></span> <span id="result-legend">Result f(g(x))</span> <span class="legend-component">— Components</span></div><span id="coordinates">Drag to pan · scroll to zoom</span><span id="status" role="status" aria-live="polite">Ready to paint</span></footer>
 <dialog id="function-dialog"><form id="function-form"><div class="dialog-heading"><h2>Make a function</h2><button type="button" data-close aria-label="Close">×</button></div><label>Name<input id="function-name" placeholder="My wave" maxlength="48"></label><label>JavaScript math expression<input id="function-source" placeholder="Math.sin(x) * Math.cos(2 * x)" required autocomplete="off" spellcheck="false" maxlength="500"></label><p class="subtext">Use x (or t in parametric mode), numbers, + − * / **, parentheses, Math.PI, and Math functions: sin, cos, tan, abs, sqrt, exp, log, floor, ceil, round, min, max, pow, sign, asin, acos, atan, sinh, cosh, tanh.</p><canvas id="function-preview" width="480" height="130"></canvas><p id="function-error" role="alert"></p><button class="primary" type="submit">Add to palette</button></form></dialog>
 <dialog id="code-dialog"><div class="dialog-heading"><h2>The full expression</h2><button data-close aria-label="Close">×</button></div><p class="subtext">Every operation, expanded as a JavaScript function.</p><textarea id="code" readonly spellcheck="false" aria-label="Full JavaScript expression"></textarea><button id="copy-code" class="primary">Copy JavaScript</button></dialog>
-<script src="js/math.js"></script><script src="js/model.js"></script><script src="js/document.js"></script><script src="js/plot.js"></script><script src="js/palette.js"></script><script src="js/app.js"></script>
+<section id="ai-chat" aria-label="AI function assistant">
+  <button id="ai-toggle" type="button" aria-expanded="false" aria-controls="ai-panel">✦ Ask AI</button>
+  <div id="ai-panel" hidden>
+    <div class="ai-heading"><strong>Function assistant</strong><button id="ai-close" type="button" aria-label="Close chat">×</button></div>
+    <p class="ai-note">Describe a function. It will replace the selected F or G editor.</p>
+    <label class="ai-key-label" for="ai-key">Your OpenAI API key</label>
+    <div class="ai-key-row"><input id="ai-key" type="password" autocomplete="off" placeholder="sk-…"><button id="ai-forget" type="button" title="Forget key">Clear</button></div>
+    <p class="ai-key-warning">Sent from this browser to OpenAI. Kept in memory only; don’t use a key you can’t expose to this page.</p>
+    <div id="ai-messages" role="log" aria-live="polite"><p class="ai-message assistant">I can turn a curve idea into a function. For example: “a heart-shaped curve.”</p></div>
+    <form id="ai-form"><textarea id="ai-prompt" rows="2" maxlength="1200" placeholder="Describe the function…" aria-label="Describe a function" required></textarea><button id="ai-send" class="primary" type="submit">Create</button></form>
+    <div class="ai-footer"><label>Model <select id="ai-model"><option value="gpt-4o-mini">GPT-4o mini · low cost</option><option value="gpt-4.1-mini">GPT-4.1 mini · stronger</option></select></label><button id="ai-clear-chat" type="button">Clear chat</button></div>
+  </div>
+</section>
+<script src="js/math.js"></script><script src="js/model.js"></script><script src="js/document.js"></script><script src="js/plot.js"></script><script src="js/palette.js"></script><script src="js/app.js"></script><script src="js/ai.js"></script>
 </body></html>

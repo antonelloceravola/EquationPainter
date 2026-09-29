@@ -75,3 +75,7 @@ const state = EP.api.get();
 - `get()` returns a copy of the current functions and view settings, the palette names and sources, and the generated JavaScript in `code`.
 
 Calls that edit expressions use the app's undo history and redraw the visible UI. Node ids can be read from `get().functions`; they remain valid until that node is replaced or removed. The API controls the current page and is available to browser scripts, bookmarklets, or the developer console; it is not a separate server endpoint.
+
+## AI function assistant
+
+The floating **Ask AI** panel sends prompts to OpenAI using the key entered by the user. It defaults to `gpt-4o-mini`; model availability and pricing can change. The key stays in page memory and is not saved to browser storage. The API request is made directly by the browser, so this is intended for personal experimentation, not for a public/shared deployment. OpenAI recommends keeping standard API keys out of browser clients. Expressions returned by the model are parsed by `EP.Math` and applied through `EP.api.paint()`; model output is never evaluated as JavaScript.
