@@ -30,6 +30,21 @@ Drag the palette by its header to move it. Drag the canvas to pan; scroll to zoo
 
 Choose Square, Sawtooth, or Triangle and 1–32 harmonic terms, amplitude A and period T, then Generate series. The series is combined with the selected F or G editor using the current operator. Use Replace to start fresh. Every harmonic is a selectable sine function with editable amplitude, angular frequency, and phase. Re-generating adds a new series, rather than altering the old one.
 
+The studio is also available through the public API. This call generates the same series, updates the visible Fourier Studio controls, fits the plot, and replaces F:
+
+```js
+EP.api.do('fourier', {
+  wave: 'triangle',       // 'square' | 'sawtooth' | 'triangle'
+  terms: 9,               // integer from 1 to 32
+  amplitude: 1.5,         // finite number
+  period: 4,              // finite positive number
+  to: 'f',                // 'f' | 'g'
+  op: 'replace'           // any supported paint operation
+});
+```
+
+`to` and `op` are optional; they default to the active editor and current operation. The period T sets angular frequency ω = 2π/T. `EP.api.paint({wave, terms, amplitude, period}, options)` accepts the same Fourier specification and composes the series into the document; use `do('fourier', ...)` when you also want the studio controls and plot fit to update. Both paths validate the wave type, term count, amplitude, and period. The operation is undoable.
+
 With ω = 2π/T:
 
 - Square: Σ 4A/[π(2j−1)] sin((2j−1)ωx)
@@ -79,3 +94,5 @@ Calls that edit expressions use the app's undo history and redraw the visible UI
 ## AI function assistant
 
 The floating **Ask AI** panel sends prompts to OpenAI using the key entered by the user. It defaults to `gpt-4o-mini`; model availability and pricing can change. The key stays in page memory and is not saved to browser storage. The API request is made directly by the browser, so this is intended for personal experimentation, not for a public/shared deployment. OpenAI recommends keeping standard API keys out of browser clients. Expressions returned by the model are parsed by `EP.Math` and applied through `EP.api.paint()`; model output is never evaluated as JavaScript.
+
+The assistant receives the expression grammar and the Fourier API contract described above. For standard square, sawtooth, or triangle wave requests, it can choose Fourier Studio settings and call `EP.api.do('fourier', ...)`; other function requests become validated expressions passed to `EP.api.paint()`.

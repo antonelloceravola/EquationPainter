@@ -113,6 +113,10 @@
         EP.Math.compile(expression);
         node=M.leaf(expression,name);
       }else if(expression&&typeof expression==='object'&&'wave'in expression){
+        if(!['square','sawtooth','triangle'].includes(expression.wave))throw new RangeError('Fourier wave must be square, sawtooth, or triangle');
+        if(!Number.isInteger(expression.terms??7)||(expression.terms??7)<1||(expression.terms??7)>32)throw new RangeError('Fourier terms must be an integer from 1 to 32');
+        if(!Number.isFinite(expression.amplitude??1))throw new TypeError('Fourier amplitude must be finite');
+        if(!Number.isFinite(expression.period??2*Math.PI)||(expression.period??2*Math.PI)<=0)throw new RangeError('Fourier period must be finite and positive');
         node=M.fourier(expression.wave,expression.terms??7,expression.amplitude??1,expression.period??2*Math.PI);
       }else if(expression&&typeof expression==='object'&&expression.type){node=M.clone(expression);}
       else throw new TypeError('paint expects a math expression, expression node, or Fourier options');
@@ -150,7 +154,19 @@
         case 'close-dialog':document.querySelectorAll('dialog[open]').forEach(d=>d.close());break;
         case 'copy-code':$('code').value=state.code();$('copy-code').click();break;
         case 'palette':{const item=typeof value==='string'?{source:value,name:value}:{...value};if(!item?.source&&!item?.tree)throw new TypeError('palette expects a math expression or palette item');if(item.source)EP.Math.compile(item.source);palette.add(item);break;}
-        case 'fourier':return this.paint({wave:value?.wave||state.wave,terms:value?.terms??7,amplitude:value?.amplitude??1,period:value?.period??2*Math.PI},value||{});
+        case 'fourier':{
+          const settings={wave:value?.wave||state.wave,terms:value?.terms??7,amplitude:value?.amplitude??1,period:value?.period??2*Math.PI};
+          // Keep the visible Fourier Studio controls in sync with API calls.
+          if(!['square','sawtooth','triangle'].includes(settings.wave))throw new RangeError('Fourier wave must be square, sawtooth, or triangle');
+          if(!Number.isInteger(settings.terms)||settings.terms<1||settings.terms>32)throw new RangeError('Fourier terms must be an integer from 1 to 32');
+          if(!Number.isFinite(settings.amplitude))throw new TypeError('Fourier amplitude must be finite');
+          if(!Number.isFinite(settings.period)||settings.period<=0)throw new RangeError('Fourier period must be finite and positive');
+          state.wave=settings.wave;
+          document.querySelectorAll('[data-wave]').forEach(button=>{const active=button.dataset.wave===settings.wave;button.classList.toggle('active',active);button.setAttribute('aria-pressed',active);});
+          $('harmonics').value=settings.terms;$('harmonics-value').textContent=String(settings.terms);
+          $('fourier-amplitude').value=settings.amplitude;$('fourier-period').value=settings.period;
+          this.paint(settings,value||{});plot.fit();return this.get();
+        }
         default:throw new RangeError('Unknown action: '+action);
       }
       return this.get();
