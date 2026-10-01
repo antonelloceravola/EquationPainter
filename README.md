@@ -45,7 +45,7 @@ Beyond Fourier reconstruction, it could help design:
 - Window functions for FFT work: Hann, Blackman, Kaiser, Tukey, and custom windows.
 - Approximation of a target sound by a finite Fourier series.
 
-TODO: A useful feature here would be a “harmonic view” showing the function and its spectrum side by side.
+TODO: A useful feature here would be a “harmonic view” showing the function and its spectrum side by side. Add an ADSR function. Consider to play the sound
 
 ### Neural-network transfer functions
 
